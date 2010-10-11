@@ -1,0 +1,64 @@
+%{
+#include "netcdf_cmd.h"
+extern int yyerror(CMD_Parser * ptr, const char *s);
+extern int yylex(CMD_Parser * ptr);
+%}
+%union {
+	double num;
+	char * str;
+}
+%parse-param { CMD_Parser * ptr }
+%lex-param { CMD_Parser * ptr }
+%token HELP
+%token INFO
+%token DUMP
+%token <num> NUM
+%token <str> STR
+%token FLE
+%token DIM
+%token VAR
+%token ATT
+%%
+
+grp: hlp
+	| info
+	| file
+	| dump
+	| grp grp
+	;
+
+hlp: HELP { ptr->help(); }
+	;
+
+file: FLE STR { ptr->open($2); }
+	;
+
+info: INFO  { ptr->info(); }
+	| INFO VAR STR    { ptr->info_var($3); }
+	| INFO ATT STR    { ptr->info_att($3); }
+	;
+
+slice: DIM STR            { ptr->add_slice($2); }
+	| DIM STR NUM NUM { ptr->add_slice($2, $3, $4); }
+	| slice DIM STR   { ptr->add_slice($3); }
+	| slice DIM STR NUM NUM { ptr->add_slice($3, $4, $5); }
+	;
+
+dump: DUMP FLE STR VAR STR           { ptr->dump($3, $5); }
+	| DUMP FLE STR VAR STR slice { ptr->dump($3, $5); }
+	;
+%%
+
+int yyerror(CMD_Parser * ptr, const char * s)
+{
+	fprintf(stderr, "cmd syntax error\n");
+	ptr->help();
+	exit(-1);
+	return 0;
+}
+
+int yylex(CMD_Parser * ptr)
+{
+	return ptr->next();
+}
+
