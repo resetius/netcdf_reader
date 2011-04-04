@@ -15,6 +15,7 @@ extern int yylex(CMD_Parser * ptr);
 %token <num> NUM
 %token <str> STR
 %token FLE
+%token TXT
 %token DIM
 %token VAR
 %token ATT
@@ -44,8 +45,12 @@ slice: DIM STR            { ptr->add_slice($2); }
 	| slice DIM STR NUM NUM { ptr->add_slice($3, $4, $5); }
 	;
 
-dump: DUMP FLE STR VAR STR           { ptr->dump($3, $5); }
+dump: 
+    DUMP FLE STR VAR STR       { ptr->dump($3, $5); }
 	| DUMP FLE STR VAR STR slice { ptr->dump($3, $5); }
+  | DUMP TXT FLE STR VAR STR       { ptr->text_mode(); ptr->dump($4, $6); }
+	| DUMP TXT FLE STR VAR STR slice { ptr->text_mode(); ptr->dump($4, $6); }
+
 	;
 %%
 

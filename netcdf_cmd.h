@@ -44,8 +44,9 @@ struct CMD_Parser {
 	NcFile * f_;
 	typedef std::set < Slice > slices_t;
 	slices_t slices_;
+	bool text_;
 
-	CMD_Parser (int argc, char * argv[]): f_(0), cur_(1), argc_(argc), argv_(argv) {}
+	CMD_Parser (int argc, char * argv[]): f_(0), cur_(1), argc_(argc), argv_(argv), text_(false) {}
 	~CMD_Parser() { delete f_; }
 
 	void parse();
@@ -65,6 +66,7 @@ struct CMD_Parser {
 
 	void check_file();
 
+	void text_mode() { text_ = true; }
 	void dump(const char * to, const char * what);
 	void add_slice(const char * dim);
 	void add_slice(const char * dim, double from, double to);
