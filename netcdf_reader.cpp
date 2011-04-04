@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <stdlib.h>
 #include <vector>
 
@@ -193,6 +194,7 @@ T * write_to_stream(int dim, int count, T * d, const long * counts, int dims, St
 {
 	if (dim == dims - 1) {
 		for (int i = 0; i < counts[dim]; ++i) {
+			stream << fixed << setw(20) << setprecision(16);
 			stream << *d++ << " ";
 		}
 		return d;
